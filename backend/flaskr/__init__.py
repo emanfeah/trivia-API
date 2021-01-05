@@ -32,7 +32,7 @@ def create_app(test_config=None):
         response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
         return response
 
-    # done and test
+    #  this is a get request to get all categories
     @app.route('/categories')
     def get_categories():
         categories = Category.query.order_by(Category.type).all()
@@ -45,7 +45,7 @@ def create_app(test_config=None):
             'categories': {category.id: category.type for category in categories}
         })
 
-    # done and test
+    #  this is a get request to get all questions
     @app.route('/questions')
     def get_questions():
         selection = Question.query.order_by(Question.id).all()
@@ -65,6 +65,7 @@ def create_app(test_config=None):
 
         })
 
+    # this route to delete a question
     @app.route('/questions/<int:question_id>', methods=['DELETE'])
     def delete_question(question_id):
         try:
@@ -87,6 +88,8 @@ def create_app(test_config=None):
         except:
             abort(404)
 
+    # this route to create question
+
     @app.route('/questions', methods=['POST'])
     def create_question():
         body = request.get_json()
@@ -97,11 +100,11 @@ def create_app(test_config=None):
         searchTerm = body.get('searchTerm', None)
 
         try:
-
+            # this code for search
             if searchTerm:
                 selection = Question.query.order_by(Question.id).filter(
                     Question.question.ilike('%{}%'.format(searchTerm))).all()
-                if selection  == []:
+                if selection == []:
                     abort(422)
 
                 current_questions = paginate_questions(request, selection)
@@ -128,6 +131,7 @@ def create_app(test_config=None):
         except:
             abort(422)
 
+    # route to get all questions by categore
     @app.route('/categories/<int:category_id>/questions')
     def get_questions_by_category(category_id):
         try:
@@ -144,6 +148,8 @@ def create_app(test_config=None):
             })
         except:
             abort(404)
+
+    # this route to play a random quizzes
 
     @app.route('/quizzes', methods=['POST'])
     def play_quiz():
@@ -178,6 +184,8 @@ def create_app(test_config=None):
             })
         except:
             abort(422)
+
+    # error handandler
 
     @app.errorhandler(404)
     def not_found(error):
